@@ -1,101 +1,156 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
+import { PageShell } from "@/components/layout/PageShell";
+import { LeagueCard } from "@/components/league/LeagueCard";
+import { GameCard } from "@/components/game/GameCard";
+import { useLeagues } from "@/hooks/useLeagues";
+import { useTeams } from "@/hooks/useTeams";
+import { useFavourites } from "@/hooks/useFavourites";
+import { useTodayGames } from "@/hooks/useTodayGames";
+
+export default function HomePage() {
+  const [search, setSearch] = useState("");
+  const { data: leagues, isLoading, error } = useLeagues();
+  const { data: teams } = useTeams();
+  const { favourites, toggleFavourite, isFavourite } = useFavourites();
+  const { games: todayGames, isLoading: todayLoading } = useTodayGames();
+
+  const teamCountByLeague = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const t of teams ?? []) {
+      map.set(t.leagueId, (map.get(t.leagueId) ?? 0) + 1);
+    }
+    return map;
+  }, [teams]);
+
+  const teamMap = useMemo(() => {
+    return new Map(teams?.map((t) => [t.teamId, t]) ?? []);
+  }, [teams]);
+
+  const filteredLeagues = useMemo(() => {
+    if (!leagues) return [];
+    const q = search.trim().toLowerCase();
+    if (!q) return leagues;
+    return leagues.filter((l) => l.name.toLowerCase().includes(q));
+  }, [leagues, search]);
+
+  const favouriteLeagues = useMemo(() => {
+    if (!leagues) return [];
+    const favSet = new Set(favourites);
+    return leagues.filter((l) => favSet.has(l.leagueId));
+  }, [leagues, favourites]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <PageShell>
+      <div className="flex flex-col">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-gray-200 dark:border-gray-800 p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="search"
+              placeholder="Search leagues..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-background text-foreground placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-accent/50"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div className="p-4 space-y-6">
+          {isLoading && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              Loading leagues...
+            </div>
+          )}
+          {error && (
+            <div className="text-center py-8 text-red-500">
+              Failed to load leagues
+            </div>
+          )}
+
+          {favouriteLeagues.length > 0 && (
+            <section>
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                Favourites
+              </h2>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                {favouriteLeagues.map((league) => (
+                  <div key={league.leagueId} className="shrink-0 w-[280px]">
+                    <LeagueCard
+                      league={league}
+                      teamCount={teamCountByLeague.get(league.leagueId) ?? 0}
+                      isFavourite={true}
+                      onToggleFavourite={(e) => {
+                        e.preventDefault();
+                        toggleFavourite(league.leagueId);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+              Today&apos;s Games
+            </h2>
+            {todayLoading ? (
+              <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
+                Loading...
+              </div>
+            ) : todayGames.length > 0 ? (
+              <div className="space-y-3">
+                {todayGames.map((game) => {
+                  const homeTeam = teamMap.get(game.homeTeamId);
+                  const awayTeam = teamMap.get(game.awayTeamId);
+                  if (!homeTeam || !awayTeam) return null;
+                  return (
+                    <GameCard
+                      key={game.gameId}
+                      game={game}
+                      homeTeam={homeTeam}
+                      awayTeam={awayTeam}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
+                No games scheduled today
+              </div>
+            )}
+          </section>
+
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+              All Leagues
+            </h2>
+            {filteredLeagues.length === 0 ? (
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                No leagues found
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredLeagues.map((league) => (
+                  <LeagueCard
+                    key={league.leagueId}
+                    league={league}
+                    teamCount={teamCountByLeague.get(league.leagueId) ?? 0}
+                    isFavourite={isFavourite(league.leagueId)}
+                    onToggleFavourite={(e) => {
+                      e.preventDefault();
+                      toggleFavourite(league.leagueId);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    </PageShell>
   );
 }
