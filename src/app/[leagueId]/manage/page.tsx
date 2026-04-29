@@ -119,7 +119,7 @@ export default function ManagePage({
                   inputRefs.current[i] = el;
                 }}
                 type="text"
-                inputMode="numeric"
+                inputMode="text"
                 maxLength={1}
                 value={c}
                 onChange={(e) => handleCodeChange(i, e.target.value)}
