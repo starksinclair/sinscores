@@ -11,7 +11,7 @@ import { useManageAccess } from "@/hooks/useManageAccess";
 import { repositories } from "@/infrastructure/container";
 import { generateAccessCode } from "@/core/utils/accessCode.util";
 
-const isProduction = process.env.NEXT_PUBLIC_PRODCTION === "true";
+const isProduction = process.env.NEXT_PUBLIC_PRODUCTION === "true";
 
 export function ManageSettingsTabContent({ leagueId }: { leagueId: string }) {
   const { data: league } = useLeague(leagueId);

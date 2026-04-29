@@ -7,7 +7,7 @@ import { LocalStorageGameRepository } from "./localStorage/game.repository";
 import { LocalStorageStatRepository } from "./localStorage/stat.repository";
 import { LocalStorageStatTypeRepository } from "./localStorage/statType.repository";
 
-const isProduction = process.env.NEXT_PUBLIC_PRODCTION === "true";
+const isProduction = process.env.NEXT_PUBLIC_PRODUCTION === "true";
 
 const localStorageRepositories = {
   league: new LocalStorageLeagueRepository(),
@@ -21,7 +21,7 @@ const localStorageRepositories = {
 };
 
 /**
- * Production (NEXT_PUBLIC_PRODCTION=true): Uses API client - data comes from
+ * Production (NEXT_PUBLIC_PRODUCTION=true): Uses API client - data comes from
  * Sheets via API routes (credentials are server-only, not available in browser).
  * Development: Uses LocalStorage for testing.
  */

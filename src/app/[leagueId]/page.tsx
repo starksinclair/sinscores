@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { Tv } from "lucide-react";
 import { LeagueHeader } from "@/components/league/LeagueHeader";
 import { LeagueTabs } from "@/components/league/LeagueTabs";
 import { SeasonSelector } from "@/components/league/SeasonSelector";
 import { GameCard } from "@/components/game/GameCard";
+import { TVScoreboard } from "@/components/game/TVScoreboard";
 import { Card, CardContent } from "@/components/ui/Card";
 import { PlayerAvatar } from "@/components/player/PlayerAvatar";
 import { useLeague } from "@/hooks/useLeagues";
@@ -27,6 +30,7 @@ export default function LeagueHomePage({
   const { data: teams } = useTeamsByLeague(leagueId, season);
   const { data: leaguePlayers } = useLeaguePlayers(leagueId, season);
   const { data: playerOfSeason } = usePlayerOfSeason(leagueId, season);
+  const [tvGameId, setTvGameId] = useState<string | null>(null);
 
   const teamMap = new Map(teams?.map((t) => [t.teamId, t]) ?? []);
 
@@ -111,12 +115,26 @@ export default function LeagueHomePage({
                 const awayTeam = teamMap.get(game.awayTeamId);
                 if (!homeTeam || !awayTeam) return null;
                 return (
-                  <GameCard
-                    key={game.gameId}
-                    game={game}
-                    homeTeam={homeTeam}
-                    awayTeam={awayTeam}
-                  />
+                  <div key={game.gameId} className="relative">
+                    <GameCard
+                      game={game}
+                      homeTeam={homeTeam}
+                      awayTeam={awayTeam}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setTvGameId(game.gameId);
+                      }}
+                      className="absolute top-2 right-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/80 text-white text-xs font-semibold shadow-md hover:bg-black transition-colors"
+                      aria-label="Open TV mode"
+                    >
+                      <Tv className="h-3.5 w-3.5" />
+                      TV
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -169,6 +187,22 @@ export default function LeagueHomePage({
           </section>
         )}
       </div>
+
+      {tvGameId && (() => {
+        const tvGame = liveGames.find((g) => g.gameId === tvGameId);
+        if (!tvGame) return null;
+        const home = teamMap.get(tvGame.homeTeamId);
+        const away = teamMap.get(tvGame.awayTeamId);
+        if (!home || !away) return null;
+        return (
+          <TVScoreboard
+            game={tvGame}
+            homeTeam={home}
+            awayTeam={away}
+            onClose={() => setTvGameId(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

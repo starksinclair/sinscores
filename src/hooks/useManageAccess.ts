@@ -9,7 +9,7 @@ function getStorageKey(leagueId: string): string {
   return `${STORAGE_KEY_PREFIX}${leagueId}`;
 }
 
-const isProduction = process.env.NEXT_PUBLIC_PRODCTION === "true";
+const isProduction = process.env.NEXT_PUBLIC_PRODUCTION === "true";
 
 export function useManageAccess(leagueId: string) {
   const [isUnlocked, setIsUnlocked] = useState(false);

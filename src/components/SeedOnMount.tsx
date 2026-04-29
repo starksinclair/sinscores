@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { repositories } from "@/infrastructure/container";
 import { seedIfEmpty } from "@/infrastructure/localStorage/seed";
 
-const isProduction = process.env.NEXT_PUBLIC_PRODCTION === "true";
+const isProduction = process.env.NEXT_PUBLIC_PRODUCTION === "true";
 
 export function SeedOnMount() {
   const queryClient = useQueryClient();

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useLeagueByAccessCode } from "@/hooks/useLeagues";
 
-const isProduction = process.env.NEXT_PUBLIC_PRODCTION === "true";
+const isProduction = process.env.NEXT_PUBLIC_PRODUCTION === "true";
 
 export default function ManagePage() {
   const [code, setCode] = useState<string[]>(Array(6).fill(""));

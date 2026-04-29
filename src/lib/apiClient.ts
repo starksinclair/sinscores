@@ -1,6 +1,6 @@
 /**
  * API client for production mode (Sheets backend).
- * Used when NEXT_PUBLIC_PRODCTION is true - client fetches via API routes
+ * Used when NEXT_PUBLIC_PRODUCTION is true - client fetches via API routes
  * instead of using repositories directly (credentials are server-only).
  */
 

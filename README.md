@@ -42,7 +42,7 @@ cp .env.example .env.local
 ### Required / common
 
 - `NEXT_PUBLIC_APP_NAME` (optional display name)
-- `NEXT_PUBLIC_PRODCTION` (`true` for production API/Sheets mode, otherwise LocalStorage mode)
+- `NEXT_PUBLIC_PRODUCTION` (`true` for production API/Sheets mode, otherwise LocalStorage mode)
 
 ### Google Sheets (server-side, production)
 
